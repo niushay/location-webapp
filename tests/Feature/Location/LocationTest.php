@@ -37,3 +37,36 @@ test('Location details can be retrieved', function () {
             ],
         ]);
 });
+
+test('Get all locations with pagination', function () {
+    Location::factory()->count(3)->create();
+
+    $response = $this->get('/api/locations', [
+        'limit' => 2,
+        'page' => 1,
+        'offset' => 1,
+    ]);
+
+    $response
+        ->assertStatus(200)
+        ->assertJsonStructure([
+            'locations' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'latitude',
+                    'longitude',
+                    'created_at',
+                    'updated_at',
+                ],
+            ],
+            'pagination' => [
+                'total',
+                'limit',
+                'currentPage',
+                'lastPage',
+                'from',
+                'to',
+            ],
+        ]);
+});

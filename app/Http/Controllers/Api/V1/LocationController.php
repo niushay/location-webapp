@@ -9,13 +9,18 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
+
 /**
- * @OA\OpenApi(
- *     @OA\Info(
- *         version="1.0",
- *         title="Navigation Api",
- *         description="Navigation List Api",
- *     )
+ * @OA\Schema(
+ *     schema="Location",
+ *     title="Location",
+ *     description="Location model",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="name", type="string"),
+ *     @OA\Property(property="latitude", type="string"),
+ *     @OA\Property(property="longitude", type="string"),
+ *     @OA\Property(property="created_at", type="string"),
+ *     @OA\Property(property="updated_at", type="string"),
  * )
  */
 class LocationController extends Controller
@@ -103,6 +108,68 @@ class LocationController extends Controller
 
         return response()->json([
             'location' => $location
+        ]);
+    }
+
+    /**
+     * Get a paginated list of all locations.
+     *
+     * @OA\Get(
+     *     path="/api/locations",
+     *     tags={"Location"},
+     *     summary="Get all locations with pagination.",
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination.",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         description="Number of items per page.",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="locations", type="array", @OA\Items(ref="#/components/schemas/Location")),
+     *             @OA\Property(
+     *                 property="pagination",
+     *                 type="object",
+     *                 @OA\Property(property="total", type="integer", example=20),
+     *                 @OA\Property(property="limit", type="integer", example=10),
+     *                 @OA\Property(property="currentPage", type="integer", example=1),
+     *                 @OA\Property(property="lastPage", type="integer", example=2),
+     *                 @OA\Property(property="from", type="integer", example=1),
+     *                 @OA\Property(property="to", type="integer", example=10),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getAllLocations(Request $request): JsonResponse
+    {
+        $limit = $request->input('limit', 10);
+        $page = $request->input('page', 1);
+
+        $locations = Location::orderByDesc('created_at')
+            ->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'locations' => $locations->items(),
+            'pagination' => [
+                'total' => $locations->total(),
+                'limit' => $locations->perPage(),
+                'currentPage' => $locations->currentPage(),
+                'lastPage' => $locations->lastPage(),
+                'from' => $locations->firstItem(),
+                'to' => $locations->lastItem(),
+            ],
         ]);
     }
 }
