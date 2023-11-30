@@ -11,6 +11,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Artisan;
+
 uses(
     Tests\TestCase::class,
      Illuminate\Foundation\Testing\LazilyRefreshDatabase::class,
@@ -48,6 +50,5 @@ function something()
 }
 
 beforeEach(function () {
-    // Run your migrations here
-    \Artisan::call('migrate');
+    Artisan::call('migrate');
 });
