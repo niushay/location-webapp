@@ -17,4 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:20,1'])->group(function () {
     Route::post('/addLocation', [LocationController::class, 'addLocation']);
+    Route::get('/location/{id}', [LocationController::class, 'locationDetails']);
+
 });

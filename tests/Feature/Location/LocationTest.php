@@ -23,3 +23,17 @@ test('New location can add', function () {
 
     expect($location)->toBeInstanceOf(Location::class);
 });
+
+test('Location details can be retrieved', function () {
+    $location = Location::factory()->create();
+
+    $response = $this->get("/api/location/{$location->id}");
+
+    $response
+        ->assertStatus(200)
+        ->assertJson([
+            'location' => [
+                'id' => $location->id,
+            ],
+        ]);
+});

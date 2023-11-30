@@ -22,4 +22,13 @@ class LocationController extends Controller
             'location' => $location
             ], 201);
     }
+
+    public function locationDetails($id): JsonResponse
+    {
+        $location = Location::findOrFail($id);
+
+        return response()->json([
+            'location' => $location
+        ]);
+    }
 }
