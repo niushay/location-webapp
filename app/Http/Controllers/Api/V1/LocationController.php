@@ -47,16 +47,9 @@ class LocationController extends Controller
      *         response=201,
      *         description="Location added successfully",
      *         @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Location added successfully"),
-     *              @OA\Property(property="location", type="object",
-     *                  @OA\Property(property="id", type="number"),
-     *                  @OA\Property(property="latitude", type="number"),
-     *                  @OA\Property(property="longitude", type="number"),
-     *                  @OA\Property(property="name", type="string"),
-     *                  @OA\Property(property="marker_color", type="string"),
-     *                  @OA\Property(property="created_at", type="string"),
-     *                  @OA\Property(property="updated_at", type="string")
-     *              )
+     *             ref="#/components/schemas/Location",
+     *             @OA\Property(property="message", type="string", example="Location added successfully"),
+     *             @OA\Property(property="location", type="object", ref="#/components/schemas/Location")
      *         )
      *     )
      * )
@@ -91,14 +84,7 @@ class LocationController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(
-     *              @OA\Property(property="id", type="number", example=1),
-     *              @OA\Property(property="name", type="string", example="name"),
-     *              @OA\Property(property="latitude", type="string", example="latitude"),
-     *              @OA\Property(property="longitude", type="string", example="longitude"),
-     *              @OA\Property(property="created_at", type="string", example="2021-12-11T09:25:53.000000Z"),
-     *              @OA\Property(property="updated_at", type="string", example="2021-12-11T09:25:53.000000Z")
-     *         )
+     *         @OA\JsonContent(ref="#/components/schemas/Location")
      *     )
      * )
      */

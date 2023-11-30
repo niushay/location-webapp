@@ -48,39 +48,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Location added successfully"
-                                        },
-                                        "location": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "number"
-                                                },
-                                                "latitude": {
-                                                    "type": "number"
-                                                },
-                                                "longitude": {
-                                                    "type": "number"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "marker_color": {
-                                                    "type": "string"
-                                                },
-                                                "created_at": {
-                                                    "type": "string"
-                                                },
-                                                "updated_at": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/Location"
                                 }
                             }
                         }
@@ -111,33 +79,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "id": {
-                                            "type": "number",
-                                            "example": 1
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "example": "name"
-                                        },
-                                        "latitude": {
-                                            "type": "string",
-                                            "example": "latitude"
-                                        },
-                                        "longitude": {
-                                            "type": "string",
-                                            "example": "longitude"
-                                        },
-                                        "created_at": {
-                                            "type": "string",
-                                            "example": "2021-12-11T09:25:53.000000Z"
-                                        },
-                                        "updated_at": {
-                                            "type": "string",
-                                            "example": "2021-12-11T09:25:53.000000Z"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/Location"
                                 }
                             }
                         }
