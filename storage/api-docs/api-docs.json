@@ -1,0 +1,149 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Navigation Api",
+        "description": "Navigation List Api",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/addLocation": {
+            "post": {
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Add a new location",
+                "description": "Add a new location\n\nThis endpoint allows you to add a new location by providing latitude, longitude, name, and marker color.",
+                "operationId": "25a27771948ed598071276804b1934d8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "latitude": {
+                                        "type": "number",
+                                        "example": 40.748817
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "example": -73.985428
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Sample Location"
+                                    },
+                                    "marker_color": {
+                                        "type": "string",
+                                        "example": "#111111"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Location added successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Location added successfully"
+                                        },
+                                        "location": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number"
+                                                },
+                                                "latitude": {
+                                                    "type": "number"
+                                                },
+                                                "longitude": {
+                                                    "type": "number"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "marker_color": {
+                                                    "type": "string"
+                                                },
+                                                "created_at": {
+                                                    "type": "string"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/location/{id}": {
+            "get": {
+                "tags": [
+                    "Location"
+                ],
+                "summary": "Get Location Detail",
+                "operationId": "5aa0863a0a475f7060132f62f8598ac4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "number",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "name"
+                                        },
+                                        "latitude": {
+                                            "type": "string",
+                                            "example": "latitude"
+                                        },
+                                        "longitude": {
+                                            "type": "string",
+                                            "example": "longitude"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "example": "2021-12-11T09:25:53.000000Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "example": "2021-12-11T09:25:53.000000Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
