@@ -17,10 +17,10 @@ class LocationFactory extends Factory
     public function definition(): array
     {
         return [
-            "longitude" => 40.7488170,
-            "latitude" => -73.9854280,
-            "name" => "Sample Location",
-            "marker_color" => "#111111"
+            'longitude' => $this->faker->randomFloat(7, -180, 180),
+            'latitude' => $this->faker->randomFloat(7, -90, 90),
+            'name' => $this->faker->word,
+            'marker_color' => $this->faker->hexColor,
         ];
     }
 }

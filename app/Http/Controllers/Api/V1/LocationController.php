@@ -8,6 +8,7 @@ use App\Models\Location;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 
 
 /**
@@ -31,7 +32,7 @@ class LocationController extends Controller
      * This endpoint allows you to add a new location by providing latitude, longitude, name, and marker color.
      *
      * @OA\Post(
-     *     path="/api/addLocation",
+     *     path="/api/add-location",
      *     tags={"Location"},
      *     summary="Add a new location",
      *     @OA\RequestBody(
@@ -47,11 +48,19 @@ class LocationController extends Controller
      *         response=201,
      *         description="Location added successfully",
      *         @OA\JsonContent(
-     *             ref="#/components/schemas/Location",
+     *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Location added successfully"),
      *             @OA\Property(property="location", type="object", ref="#/components/schemas/Location")
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(
+     *         response=442,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="errors", type="object", example={"latitude": {"The latitude field is required."}, "longitude": {"The longitude field is required."}}),
+     *         ),
+     *     ),
      * )
      *
      * @param LocationRequest $request
@@ -84,7 +93,10 @@ class LocationController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Location")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="locations", type="array", @OA\Items(ref="#/components/schemas/Location"))
+     *         )
      *     )
      * )
      */
@@ -93,6 +105,7 @@ class LocationController extends Controller
         $location = Location::findOrFail($id);
 
         return response()->json([
+            'success' =>true,
             'location' => $location
         ]);
     }
@@ -120,6 +133,7 @@ class LocationController extends Controller
      *         response=200,
      *         description="Success",
      *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="locations", type="array", @OA\Items(ref="#/components/schemas/Location")),
      *             @OA\Property(
      *                 property="pagination",
@@ -147,6 +161,7 @@ class LocationController extends Controller
             ->paginate($limit, ['*'], 'page', $page);
 
         return response()->json([
+            'success' => true,
             'locations' => $locations->items(),
             'pagination' => [
                 'total' => $locations->total(),
@@ -156,6 +171,80 @@ class LocationController extends Controller
                 'from' => $locations->firstItem(),
                 'to' => $locations->lastItem(),
             ],
+        ]);
+    }
+
+    /**
+     * Get a list of all locations sorted by distance from a specified point.
+     *
+     * @OA\Post(
+     *     path="/api/sorted-locations",
+     *     tags={"Location"},
+     *     summary="Get all locations sorted by distance.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="latitude", type="number", format="float", example=40.748817),
+     *             @OA\Property(property="longitude", type="number", format="float", example=-73.985428),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="locations", type="array", @OA\Items(ref="#/components/schemas/Location")),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=442,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="errors", type="object", example={"latitude": {"The latitude field is required."}, "longitude": {"The longitude field is required."}}),
+     *         ),
+     *     ),
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function listLocationsSortedByDistance(Request $request): JsonResponse
+    {
+        $rules = [
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ],442);
+        }
+
+        $userLatitude = $request->latitude;
+        $userLongitude = $request->longitude;
+
+        $locations = Location::all();
+
+        $locationsWithDistance = $locations->map(function ($location) use ($userLatitude, $userLongitude) {
+            $location->distance = Location::calculateHaversineDistance(
+                $userLatitude,
+                $userLongitude,
+                $location->latitude,
+                $location->longitude
+            );
+            return $location;
+        });
+
+        $sortedLocations = $locationsWithDistance->sortBy('distance')->values();
+
+        return response()->json([
+            'success' => true,
+            'locations' => $sortedLocations
         ]);
     }
 }

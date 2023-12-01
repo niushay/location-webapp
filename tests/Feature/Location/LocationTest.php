@@ -11,7 +11,7 @@ test('New location can add', function () {
         'marker_color' => '#111111',
     ];
 
-    $response = $this->post('/api/addLocation', $locationData);
+    $response = $this->post('/api/add-location', $locationData);
 
     $response
         ->assertStatus(201)
@@ -68,5 +68,36 @@ test('Get all locations with pagination', function () {
                 'from',
                 'to',
             ],
+        ]);
+});
+
+test('List locations sorted by distance', function () {
+    $locations = Location::factory()->count(3)->create();
+
+    $userLatitude = 40.7488170;
+    $userLongitude = -73.9854280;
+
+    $locationsWithDistance = $locations->map(function ($location) use ($userLatitude, $userLongitude) {
+        $location->distance = Location::calculateHaversineDistance(
+            $userLatitude,
+            $userLongitude,
+            $location->latitude,
+            $location->longitude
+        );
+        return $location;
+    });
+
+    $sortedLocations = $locationsWithDistance->sortBy('distance')->values();
+
+    $response = $this->post('/api/sorted-locations', [
+        'latitude' => $userLatitude,
+        'longitude' => $userLongitude,
+    ]);
+
+    $response
+        ->assertStatus(200)
+        ->assertJson([
+            'success' => true,
+            'locations' => $sortedLocations->toArray(),
         ]);
 });
