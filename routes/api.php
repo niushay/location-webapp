@@ -20,4 +20,5 @@ Route::middleware(['throttle:20,1'])->group(function () {
     Route::get('/location/{id}', [LocationController::class, 'locationDetails']);
     Route::get('/locations', [LocationController::class, 'getAllLocations']);
     Route::post('/sorted-locations', [LocationController::class, 'listLocationsSortedByDistance']);
+    Route::put('/edit-location/{id}', [LocationController::class, 'editLocation']);
 });

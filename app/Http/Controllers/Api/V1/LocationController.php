@@ -7,7 +7,6 @@ use App\Http\Requests\LocationRequest;
 use App\Models\Location;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -97,12 +96,27 @@ class LocationController extends Controller
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="locations", type="array", @OA\Items(ref="#/components/schemas/Location"))
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Location not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Location not found"),
+     *         ),
+     *     ),
      * )
      */
     public function locationDetails($id): JsonResponse
     {
-        $location = Location::findOrFail($id);
+        $location = Location::find($id);
+
+        if (!$location) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Location not found',
+            ], 404);
+        }
 
         return response()->json([
             'success' =>true,
@@ -245,6 +259,80 @@ class LocationController extends Controller
         return response()->json([
             'success' => true,
             'locations' => $sortedLocations
+        ]);
+    }
+
+    /**
+     * Edit a location.
+     *
+     * This endpoint allows you to edit an existing location by providing the location ID
+     * and the fields you want to update, such as latitude, longitude, name, and marker color.
+     *
+     * @OA\Put(
+     *     path="/api/edit-location/{id}",
+     *     tags={"Location"},
+     *     summary="Edit an existing location",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the location to edit",
+     *         @OA\Schema(type="integer", format="int64"),
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *              @OA\Property(property="latitude", type="number", example=40.7488170),
+     *              @OA\Property(property="longitude", type="number", example=-73.9854280),
+     *              @OA\Property(property="name", type="string", example="Updated Location"),
+     *              @OA\Property(property="marker_color", type="string", example="#222222")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Location updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Location updated successfully"),
+     *             @OA\Property(property="location", type="object", ref="#/components/schemas/Location")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Location not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Location not found"),
+     *         ),
+     *     ),
+     * )
+     *
+     * @param int $id
+     * @param LocationRequest $request
+     * @return JsonResponse
+     */
+    public function editLocation(int $id, Request $request): JsonResponse
+    {
+        $location = Location::find($id);
+
+        if (!$location) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Location not found',
+            ], 404);
+        }
+
+        $location->update([
+            'latitude' => $request->input('latitude', $location->latitude),
+            'longitude' => $request->input('longitude', $location->longitude),
+            'name' => $request->input('name', $location->name),
+            'marker_color' => $request->input('marker_color', $location->marker_color),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Location updated successfully',
+            'location' => $location,
         ]);
     }
 }
