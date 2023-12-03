@@ -1,0 +1,57 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  app-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Self-update Composer
+        run: composer self-update
+
+      - name: Clear Composer Cache
+        run: composer clear-cache
+
+      - name: Remove Composer Lock File
+        run: rm -f composer.lock
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Install NPM Dependencies
+        run: npm install
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate --env=testing
+
+      - name: Delay before MySQL check
+        run: sleep 10
+
+      - name: Check MySQL Container Status
+        run: docker ps -a
+
+      - name: Run migrations
+        run: php artisan migrate --env=testing
+
+      - name: Run tests
+        run: vendor/bin/pest
