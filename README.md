@@ -10,7 +10,7 @@
 - [Getting Started](#getting-started)
 - [Testing](#testing)
 - [Usage](#usage)
-- [OpenAI Documentation](#openai-documentation)
+- [OpenAPI Documentation](#openapi-documentation)
 - [License](#license)
 
 ## Overview
@@ -102,7 +102,7 @@ sail artisan test
 
 2. Use the provided interface to save, edit, list, view details, and route locations.
 
-## OpenAI Documentation
+## OpenAPI Documentation
 For additional documentation, including API details, refer to the following link:
 
 http://localhost/api/documentation
